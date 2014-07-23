@@ -10,7 +10,8 @@ class SessionsController < ApplicationController
 	  if user && user.authenticate(params[:session][:password])
         #Sign in the user and redirect to the user's show page
         sign_in user
-        redirect_to user
+        #redirect_to user
+        redirect_back_or user #Replaces redirect_to to handle friendly forwarding
       else
       	#Create error message and render sign in page
         flash.now[:error] = 'Invalid email/password combination' # Not quite right!

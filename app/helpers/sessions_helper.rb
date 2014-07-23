@@ -25,12 +25,13 @@ module SessionsHelper
 
   def current_user
     # Find user corresponding to remember_token created in sign_in method above
-    # Since remember_token from database is hashed we need to first hash token from the browser
+    # Use token from the browser, hash it, and check that it matches the
+    # database one
     # Then use it to find user in the database
     remember_token = User.digest(cookies[:remember_token])
     @current_user  = @current_user || User.find_by(remember_token: remember_token)
   end
-
+  
   def sign_out
     # Change or Create new remember_token in the database
     current_user.update_attribute(:remember_token, User.digest(User.new_remember_token))
@@ -39,5 +40,22 @@ module SessionsHelper
     # Set current_user to nil
     self.current_user  = nil
   end
+  
 
+  # ADDED TO HANDLE correct_user before-action IN users_controllers
+  def current_user?(user) 
+    user == current_user
+  end
+
+  #FRIENDLY FORWARDING
+  # 1. Store location of intended page somewhere
+  def store_location
+    session[:return_to] = request.url if request.get?
+  end
+
+  # 2. The redirect to that location instead
+  def redirect_back_or(default)
+    redirect_to(session[:return_to] || default)
+    session.delete(:return_to)
+  end
 end
