@@ -58,4 +58,14 @@ module SessionsHelper
     redirect_to(session[:return_to] || default)
     session.delete(:return_to)
   end
+
+  
+  def signed_in_user
+    unless signed_in?
+      store_location
+      flash[:notice] = "Please Sign in to Access the Page."
+      redirect_to signin_url
+    end
+  end
+  
 end

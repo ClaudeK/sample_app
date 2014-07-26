@@ -27,6 +27,9 @@ class UsersController < ApplicationController
   # non-signed_in or logged users to view a selected persons profile
   def show
     @user = User.find(params[:id])
+
+    #@microposts = Microposts.all
+    @microposts = @user.microposts.paginate(page: params[:page])
   end
 
   def index
@@ -54,7 +57,6 @@ class UsersController < ApplicationController
     redirect_to users_url
   end
 
-
   private
 
     def user_params
@@ -62,13 +64,16 @@ class UsersController < ApplicationController
     end
 
     #Before Filters for Authorization
-    def signed_in_user
-      unless signed_in?
-        store_location
-        flash[:notice] = "Please Sign in to Access the Page."
-        redirect_to signin_url
-      end
-    end
+    
+    # This has been moved to SessionHelper for centralized access between
+    # UsersController and SessionsController
+    # def signed_in_user
+    #  unless signed_in?
+    #    store_location
+    #    flash[:notice] = "Please Sign in to Access the Page."
+    #    redirect_to signin_url
+    #  end
+    # end
 
     def correct_user
       @user = User.find(params[:id])
